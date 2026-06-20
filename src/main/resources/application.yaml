@@ -1,3 +1,41 @@
 spring:
   application:
     name: ai-backend-maisclinical
+
+  # ============================================================
+  # BANCO DE DADOS — PostgreSQL no .200 (mapeado do teu TOML)
+  # ============================================================
+  datasource:
+    url: jdbc:postgresql://192.168.15.200:5432/sgt_telecom?sslmode=disable&connectTimeout=5
+    username: sgt
+    password: sgt_dev_2026          # mover p/ variável de ambiente em produção
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10         # = max_connections do teu TOML
+      connection-timeout: 5000      # = connect_timeout_secs (5s → ms)
+      pool-name: maisclinical-pool
+
+  # ============================================================
+  # IA — VECTOR STORE (pgvector, reaproveita o mesmo PostgreSQL)
+  # ============================================================
+  ai:
+    vectorstore:
+      pgvector:
+        initialize-schema: true     # cria a tabela vector_store + extensão na 1ª subida
+        index-type: HNSW            # índice de busca por similaridade (melhor que IVFFLAT p/ recall)
+        distance-type: COSINE_DISTANCE
+        dimensions: 768             # DEVE bater com o modelo de embedding (ver abaixo)
+        # table-name: vector_store  # default; descomente p/ customizar
+
+    # ============================================================
+    # IA — OLLAMA (inferência soberana no .201)
+    # ============================================================
+    ollama:
+      base-url: http://192.168.15.201:11434
+      chat:
+        options:
+          model: nemotron           # ou llama3.1:70b — teu modelo de geração
+          temperature: 0.2          # baixo p/ domínio clínico (menos criatividade, mais fidelidade)
+      embedding:
+        options:
+          model: nomic-embed-text   # modelo de embedding (768 dims) — o "segundo modelo" do RAG
