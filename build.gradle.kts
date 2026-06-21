@@ -62,10 +62,13 @@ dependencies {
 
     // ===== IA — RAG (advisors) =====
     implementation("org.springframework.ai:spring-ai-advisors-vector-store")
+    implementation("org.springframework.ai:spring-ai-rag")
 
     // ===== IA — INGESTÃO DE DOCUMENTOS =====
     implementation("org.springframework.ai:spring-ai-pdf-document-reader")
     implementation("org.springframework.ai:spring-ai-tika-document-reader")
+
+    implementation("org.springframework.ai:spring-ai-starter-model-transformers")
 
     // ===== IA — MEMÓRIA =====
     // REMOVIDO: spring-ai-starter-model-chat-memory-repository-jdbc
