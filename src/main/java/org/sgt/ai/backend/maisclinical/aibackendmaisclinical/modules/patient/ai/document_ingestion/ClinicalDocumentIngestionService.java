@@ -18,7 +18,10 @@ public class ClinicalDocumentIngestionService {
     private final VectorStore vectorStore;
 
     public void ingestPatientDocument(UUID patientId, Resource pdf, String docType) {
-        List<Document> chunks = new TokenTextSplitter()
+        List<Document> chunks = TokenTextSplitter.builder()
+                .withChunkSize(800)
+                .withMinChunkSizeChars(350)
+                .build()
                 .apply(new PagePdfDocumentReader(pdf).get());
 
         chunks.forEach(d -> {

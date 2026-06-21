@@ -1,6 +1,8 @@
 spring:
   application:
     name: ai-backend-maisclinical
+  profiles:
+    active: dev
 
   # ============================================================
   # BANCO DE DADOS — PostgreSQL no .200
@@ -41,7 +43,7 @@ spring:
     # ============================================================
     vectorstore:
       pgvector:
-        initialize-schema: true      # cria extensão + tabela vector_store na 1ª subida
+        initialize-schema: false      # cria extensão + tabela vector_store na 1ª subida
         index-type: HNSW
         distance-type: COSINE_DISTANCE
         dimensions: 768              # DEVE bater com a saída do nomic-embed-text

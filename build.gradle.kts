@@ -17,16 +17,13 @@ java {
 
 repositories {
     mavenCentral()
-    // Spring AI milestones/snapshots — necessário se a versão compatível com
-    // Boot 4.1 ainda não for GA no Maven Central. Remova se usar versão GA.
-    maven { url = uri("https://repo.spring.io/milestone") }
-    // maven { url = uri("https://repo.spring.io/snapshot") }
+    // 2.0.0 é GA no Maven Central — repo de milestone não é mais necessário.
+    // Mantenha comentado; reabilite só se for testar pré-releases.
+    // maven { url = uri("https://repo.spring.io/milestone") }
 }
 
-// ===== BOM do Spring AI: alinha todas as versões das libs de IA entre si =====
-// VALIDE a versão exata compatível com Spring Boot 4.1 em:
-// https://docs.spring.io/spring-ai/reference/getting-started.html
-extra["springAiVersion"] = "1.1.0"
+// ===== BOM do Spring AI: 2.0.0 GA, alinhada ao Spring Boot 4.1 =====
+extra["springAiVersion"] = "2.0.0"
 
 dependencyManagement {
     imports {
@@ -35,7 +32,7 @@ dependencyManagement {
 }
 
 dependencies {
-    // ===== SUAS DEPENDÊNCIAS ORIGINAIS (intactas) =====
+    // ===== DEPENDÊNCIAS ORIGINAIS =====
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-restclient")
@@ -54,28 +51,27 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testAnnotationProcessor("org.projectlombok:lombok")
 
-    // ===== IA — LLM + AGENTES (tool calling embutido) =====
+    // ===== IA — LLM + AGENTES (Ollama no .201; chat + embedding) =====
+// ===== IA — LLM + AGENTES (Ollama no .201) =====
     implementation("org.springframework.ai:spring-ai-starter-model-ollama")
 
     // ===== IA — RETRIEVAL (pgvector no .200) =====
-//    implementation("org.springframework.ai:spring-ai-starter-vector-store-pgvector")
+    implementation("org.springframework.ai:spring-ai-starter-vector-store-pgvector")
 
-    // ===== IA — RAG (advisors) =====
-    implementation("org.springframework.ai:spring-ai-advisors-vector-store")
+    // ===== IA — RAG (traz QuestionAnswerAdvisor, RetrievalAugmentationAdvisor, etc.) =====
     implementation("org.springframework.ai:spring-ai-rag")
 
     // ===== IA — INGESTÃO DE DOCUMENTOS =====
     implementation("org.springframework.ai:spring-ai-pdf-document-reader")
     implementation("org.springframework.ai:spring-ai-tika-document-reader")
 
-    implementation("org.springframework.ai:spring-ai-starter-model-transformers")
-
     // ===== IA — MEMÓRIA =====
-    // REMOVIDO: spring-ai-starter-model-chat-memory-repository-jdbc
-    //   → incompatível com Boot 4.1 (referencia OnDatabaseInitializationCondition,
-    //     classe que mudou de lugar no Spring Boot 4).
-    // Use InMemoryChatMemoryRepository (já no core) p/ dev, ou implemente um
+    // Na 2.0 use InMemoryChatMemoryRepository (no core) p/ dev, ou um
     // ChatMemoryRepository custom contra Redis/Valkey no .200 p/ produção.
+
+    // REMOVIDO: spring-ai-starter-model-transformers
+    //   → Você foi de Ollama (nomic-embed-text). O embedding ONNX local virou
+    //     dependência morta E gera um segundo bean EmbeddingModel (ambiguidade).
 }
 
 tasks.withType<Test> {
